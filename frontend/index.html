@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Interview Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="login-box">
+
+<h1>AI Mock Interview</h1>
+
+<input type="text" id="name" placeholder="Enter Your Name">
+
+<button onclick="enterDashboard()">Enter</button>
+
+</div>
+
+<script>
+function enterDashboard(){
+
+let username =
+document.getElementById("name").value;
+
+if(username==""){
+alert("Enter your name");
+return;
+}
+
+localStorage.setItem("username", username);
+
+window.location.href="dashboard.html";
+
+}
+</script>
+
+</body>
+</html>
