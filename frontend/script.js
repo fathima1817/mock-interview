@@ -1,9 +1,72 @@
+const API = "https://mock-interview-backend-rw8x.onrender.com";
+
 let currentField = "";
 let currentIndex = 0;
 let score = 0;
 let timer;
 let timeLeft = 30;
 let selectedQuestions = [];
+
+/* ================= AUTH ================= */
+
+function register() {
+fetch(API + "/register", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+name: document.getElementById("name").value,
+email: document.getElementById("email").value,
+password: document.getElementById("password").value
+})
+})
+.then(res => res.json())
+.then(data => alert(data.message));
+}
+
+function login() {
+fetch(API + "/login", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify({
+email: document.getElementById("email").value,
+password: document.getElementById("password").value
+})
+})
+.then(res => res.json())
+.then(data => {
+
+alert(data.message);
+
+if(data.message === "Login Success"){
+
+localStorage.setItem(
+"username",
+document.getElementById("email").value
+);
+
+window.location.href = "dashboard.html";
+}
+});
+}
+
+function saveScore(name, field, score, total){
+fetch(API + "/save-score", {
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
+name:name,
+field:field,
+score:score,
+total:total
+})
+});
+}
 
 /* ================= QUESTIONS ================= */
 
@@ -329,45 +392,20 @@ HR:[
 "What is success?",
 "What is failure?",
 "Any questions for us?"
-],
-
-DataScience:[
-"What is Data Science?",
-"What is Machine Learning?",
-"What is AI?",
-"What is supervised learning?",
-"What is unsupervised learning?",
-"What is regression?",
-"What is classification?",
-"What is dataset?",
-"What is pandas?",
-"What is numpy?",
-"What is matplotlib?",
-"What is overfitting?",
-"What is underfitting?",
-"What is train test split?",
-"What is accuracy?",
-"What is confusion matrix?",
-"What is deep learning?",
-"What is neural network?",
-"What is feature engineering?",
-"What is preprocessing?"
 ]
 
 };
 
-/* ================= START ================= */
+/* ================= PAGE LOAD ================= */
 
 window.onload = function(){
 let name = localStorage.getItem("username") || "User";
-document.getElementById("greet").innerText =
-"Welcome, " + name + " 👋";
+
+let greet = document.getElementById("greet");
+
+if(greet){
+greet.innerText = "Welcome, " + name + " 👋";
 }
-
-/* ================= DARK MODE ================= */
-
-function toggleDarkMode(){
-document.body.classList.toggle("dark");
 }
 
 /* ================= START INTERVIEW ================= */
@@ -397,7 +435,7 @@ document.getElementById("question").innerText =
 selectedQuestions[currentIndex];
 
 document.getElementById("progress").innerText =
-"Question " + (currentIndex+1) + " / 10";
+"Question " + (currentIndex + 1) + " / 10";
 
 document.getElementById("answer").value = "";
 
@@ -442,7 +480,9 @@ score++;
 currentIndex++;
 
 if(currentIndex < 10){
+
 showQuestion();
+
 }else{
 
 document.getElementById("question").innerText =
@@ -451,6 +491,10 @@ document.getElementById("question").innerText =
 document.getElementById("result").innerText =
 "Final Score: " + score + "/10";
 
+let username =
+localStorage.getItem("username") || "User";
+
+saveScore(username,currentField,score,10);
 }
 }
 
@@ -461,8 +505,7 @@ function goBack(){
 document.getElementById("fieldSection").classList.remove("hidden");
 document.getElementById("interviewSection").classList.add("hidden");
 
-document.getElementById("result").innerText="";
-
+document.getElementById("result").innerText = "";
 }
 
 /* ================= VOICE ================= */
@@ -480,6 +523,11 @@ recognition.onresult = function(event){
 document.getElementById("answer").value =
 event.results[0][0].transcript;
 
+};
 }
 
+/* ================= DARK MODE ================= */
+
+function toggleDarkMode(){
+document.body.classList.toggle("dark");
 }
